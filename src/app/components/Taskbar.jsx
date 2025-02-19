@@ -20,24 +20,49 @@
 // }
 
 
+"use client";
+import { useState } from "react";
 import Image from "next/image";
+import Window from "./Window";
+import data from "../data/data"; // Assuming data.js contains content for windows
 
-export default function Taskbar({ onSelect }) {
+export default function Taskbar() {
+  const [activeWindow, setActiveWindow] = useState(null);
+
+  const handleClick = (type) => {
+    console.log(`Opening window: ${type}`); // DEBUG
+    setActiveWindow(type);
+  };
+
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 shadow-lg min-w-max max-w-fit h-fit justify-center items-center">
-      <div className="w-fit flex flex-row justify-around items-center bg-gray-700 rounded-3xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20">
-        <div className="p-4 gap-4 flex flex-row justify-around items-center">
-          <Image onClick={() => onSelect("about")} className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-            src="/web/63.svg" width={65} height={65} alt="About"/>
-          <Image onClick={() => onSelect("work")} className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-            src="/web/79.svg" width={65} height={65} alt="Work"/>
-          <Image onClick={() => onSelect("services")} className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-            src="/web/100.svg" width={65} height={65} alt="Services"/>
-          <Image onClick={() => onSelect("contact")} className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-            src="/web/63.svg" width={65} height={65} alt="Contact"/>
+    <>
+      {/* Taskbar */}
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 shadow-lg min-w-max max-w-fit h-fit justify-center items-center">
+        <div className="w-fit flex flex-row justify-around items-center bg-gray-700 rounded-3xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20">
+          <div className="p-4 gap-4 flex flex-row justify-around items-center">
+            <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
+              src="/web/63.svg" width={65} height={65} alt="About" onClick={() => handleClick("about")} />
+            <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
+              src="/web/79.svg" width={65} height={65} alt="Work" onClick={() => handleClick("work")} />
+            <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
+              src="/web/100.svg" width={65} height={65} alt="Services" onClick={() => handleClick("services")} />
+            <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
+              src="/web/63.svg" width={65} height={65} alt="Contact" onClick={() => handleClick("contact")} />
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* Render Window if activeWindow is set */}
+      {activeWindow && (
+        <Window
+          content={data[activeWindow]}
+          onClose={() => {
+            console.log("Closing window..."); // DEBUG
+            setActiveWindow(null);
+          }}
+        />
+      )}
+    </>
   );
 }
 

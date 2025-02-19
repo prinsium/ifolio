@@ -33,26 +33,24 @@ export default function Window({ content, onClose }) {
   const [dragging, setDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  // Start Dragging
-  const handleMouseDown = (e) => {
+  const getClientPos = (e) => {
+    if (e.touches) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  };
+
+  const handleStart = (e) => {
+    const { x, y } = getClientPos(e);
     setDragging(true);
-    setOffset({
-      x: e.clientX - position.x,
-      y: e.clientY - position.y,
-    });
+    setOffset({ x: x - position.x, y: y - position.y });
   };
 
-  // Dragging
-  const handleMouseMove = (e) => {
+  const handleMove = (e) => {
     if (!dragging) return;
-    setPosition({
-      x: e.clientX - offset.x,
-      y: e.clientY - offset.y,
-    });
+    const { x, y } = getClientPos(e);
+    setPosition({ x: x - offset.x, y: y - offset.y });
   };
 
-  // Stop Dragging
-  const handleMouseUp = () => {
+  const handleEnd = () => {
     setDragging(false);
   };
 
@@ -61,23 +59,29 @@ export default function Window({ content, onClose }) {
       ref={windowRef}
       className="fixed w-[80vw] h-[80vh] bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20"
       style={{ left: `${position.x}px`, top: `${position.y}px` }}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
+      onMouseMove={handleMove}
+      onMouseUp={handleEnd}
+      onTouchMove={handleMove}
+      onTouchEnd={handleEnd}
     >
       {/* Draggable Header */}
       <div
         className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab"
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleStart}
+        onTouchStart={handleStart}
       >
-        <div className="flex flex-row gap-1.5">
+        <div className="z-30 flex flex-row gap-1.5">
           {/* Close Button */}
           <button
-            onClick={onClose}
+            onClick={() => {
+              console.log("Close button clicked!"); // DEBUG
+              onClose(); // Close the window
+            }}
             className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"
           ></button>
           <button className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"></button>
         </div>
-        <div className="absolute w-full flex justify-center items-center">
+        <div className="absolute z-10 w-full flex justify-center items-center">
           <h1 className="text-center">Window</h1>
         </div>
       </div>
