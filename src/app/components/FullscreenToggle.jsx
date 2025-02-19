@@ -30,11 +30,11 @@ export default function FullscreenToggle() {
   return (
     <button
       onClick={toggleFullscreen}
-      className="fixed top-4 right-4 p-3 bg-gray-800 text-white rounded-full shadow-md hover:bg-gray-700 transition"
+      className="fixed top-4 right-4 p-2 bg-gray-900 text-white rounded-full shadow-md hover:bg-gray-700 transition"
     >
       {isFullscreen ? 
-      <div><Image src="/web/close.svg" width={15} height={15} alt="open"/></div> : 
-      <div><Image src="/web/open.svg" width={15} height={15} alt="close"/></div>
+      <div><Image src="/web/close.svg" width={10} height={10} alt="open"/></div> : 
+      <div><Image src="/web/open.svg" width={10} height={10} alt="close"/></div>
         }
     </button>
   );
