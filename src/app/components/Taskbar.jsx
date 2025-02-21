@@ -41,13 +41,13 @@ export default function Taskbar() {
         <div className="w-fit flex flex-row justify-around items-center bg-gray-700 rounded-3xl bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20">
           <div className="p-4 gap-4 flex flex-row justify-around items-center">
             <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-              src="/web/63.svg" width={65} height={65} alt="About" onClick={() => handleClick("about")} />
+              src="/web/about.svg" width={65} height={65} alt="About" onClick={() => handleClick("about")} />
             <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-              src="/web/79.svg" width={65} height={65} alt="Work" onClick={() => handleClick("work")} />
+              src="/web/work.svg" width={65} height={65} alt="Work" onClick={() => handleClick("work")} />
             <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
               src="/web/100.svg" width={65} height={65} alt="Services" onClick={() => handleClick("services")} />
             <Image className="hover:scale-[1.15] transition-all duration-300 ease-in-out cursor-pointer"
-              src="/web/63.svg" width={65} height={65} alt="Contact" onClick={() => handleClick("contact")} />
+              src="/web/contact.svg" width={65} height={65} alt="Contact" onClick={() => handleClick("contact")} />
           </div>
         </div>
       </div>

@@ -1,25 +1,10 @@
-// import FullscreenToggle from "./components/FullscreenToggle";
-// import Taskbar from "./components/Taskbar";
-// import Window from "./components/Window";
-
-// export default function Home() {
-//   return (
-//     <div className="w-screen h-screen">
-//       <FullscreenToggle />
-//       <div className="m-10">
-//       <Window />
-//       </div>
-//       <Taskbar />
-//     </div>
-//   );
-// }
-
 
 "use client"
 import { useState } from "react";
 import Taskbar from "./components/Taskbar";
 import Window from "./components/Window";
 import data from "./data/data";
+import Topbar from "./components/Topbar";
 
 
 export default function App() {
@@ -37,6 +22,7 @@ export default function App() {
 
   return (
     <div>
+      <Topbar />
       <Taskbar onSelect={handleSelect} />
       {isWindowOpen && <Window content={selectedContent} onClose={handleClose} />}
     </div>
