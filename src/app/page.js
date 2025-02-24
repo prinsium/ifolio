@@ -28,9 +28,9 @@ export default function App() {
   return (
     <div>
       <Topbar />
-      {/* <Taskbar onSelect={handleSelect} />
-      {isWindowOpen && <Window content={selectedContent} onClose={handleClose} />} */}
-      <Services />
+      <BottomNav onSelect={handleSelect} />
+      {isWindowOpen && <Window content={selectedContent} onClose={handleClose} />}
+  
     </div>
   );
 }

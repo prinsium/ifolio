@@ -1,167 +1,80 @@
-// export default function Window(){
-//     return(
-//         <div className="w-[80vw] h-[80vh] bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20">
-//             <div className="w-full h-full flex flex-col">
-            
-//             <div className="relative p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300">
+"use client";
+import { useState, useEffect } from "react";
+import { Rnd } from "react-rnd";
+import dynamic from "next/dynamic";
 
-//                 <div className="flex flex-row gap-1.5">
-//                 <button className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"></button>
-//                 <button className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"></button>
-//                 </div>
+// Dynamically import components with SSR disabled
+const Services = dynamic(() => import("./windowRender/Services"), { ssr: false });
+const Work = dynamic(() => import("./windowRender/Work"), { ssr: false });
+const Contact = dynamic(() => import("./windowRender/Contact"), { ssr: false });
+const About = dynamic(() => import("./windowRender/About"), { ssr: false });
 
-//                 <div className="absolute w-full justify-center items-center">
-//                 <h1 className="text-center">work</h1>
-//                 </div>
+export default function Window({ contentType, onClose }) {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [size, setSize] = useState({ width: "60vw", height: "60vh" });
+  const [position, setPosition] = useState({ x: 100, y: 100 });
 
-//             </div>
+  useEffect(() => {
+    console.log("Window received contentType:", contentType);
+  }, [contentType]);
 
-//             <div></div>
+  const toggleFullscreen = () => {
+    setIsFullscreen((prev) => !prev);
+  };
 
-//             </div>
-//         </div>
-//     )
-// }
+  const renderContent = () => {
+    console.log("Rendering content for:", contentType); // Debugging log
 
-// ************
+    switch (contentType) {
+      case "services":
+        return <Services />;
+      case "work":
+        return <Work />;
+      case "contact":
+        return <Contact />;
+      case "about":
+        return <About />;
+      default:
+        console.error("Unknown contentType received:", contentType);
+        return <div style={{ color: "red" }}>No content available (invalid type: {contentType})</div>;
+    }
+  };
 
+  return (
+    <Rnd
+      className="fixed bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20 transition-all duration-300 overflow-hidden"
+      size={isFullscreen ? { width: "100vw", height: "100vh" } : size}
+      position={isFullscreen ? { x: 0, y: 0 } : position}
+      onDragStop={(e, d) => !isFullscreen && setPosition({ x: d.x, y: d.y })}
+      onResizeStop={(e, direction, ref, delta, pos) =>
+        !isFullscreen && setSize({ width: ref.style.width, height: ref.style.height })
+      }
+      disableDragging={isFullscreen}
+    >
+      {/* Draggable Header */}
+      <div className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab">
+        <div className="z-30 flex flex-row gap-1.5">
+          {/* Close Button */}
+          <button
+            onClick={onClose}
+            className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"
+          ></button>
+          {/* Fullscreen Toggle Button */}
+          <button
+            onClick={toggleFullscreen}
+            className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"
+          ></button>
+        </div>
+        <div className="absolute z-10 w-full flex justify-center items-center">
+          <h1 className="text-center capitalize">{contentType || "Unknown"}</h1>
+        </div>
+      </div>
+      {/* Content Area */}
+      <div className="p-4 overflow-auto h-full">{renderContent()}</div>
+    </Rnd>
+  );
+}
 
-// "use client";
-// import { useState, useRef } from "react";
-
-// export default function Window({ content, onClose }) {
-//   const windowRef = useRef(null);
-//   const [position, setPosition] = useState({ x: 100, y: 100 });
-//   const [dragging, setDragging] = useState(false);
-//   const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-//   const getClientPos = (e) => {
-//     if (e.touches) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-//     return { x: e.clientX, y: e.clientY };
-//   };
-
-//   const handleStart = (e) => {
-//     const { x, y } = getClientPos(e);
-//     setDragging(true);
-//     setOffset({ x: x - position.x, y: y - position.y });
-//   };
-
-//   const handleMove = (e) => {
-//     if (!dragging) return;
-//     const { x, y } = getClientPos(e);
-//     setPosition({ x: x - offset.x, y: y - offset.y });
-//   };
-
-//   const handleEnd = () => {
-//     setDragging(false);
-//   };
-
-//   return (
-//     <div
-//       ref={windowRef}
-//       className="fixed w-[80vw] h-[80vh] bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20"
-//       style={{ left: `${position.x}px`, top: `${position.y}px` }}
-//       onMouseMove={handleMove}
-//       onMouseUp={handleEnd}
-//       onTouchMove={handleMove}
-//       onTouchEnd={handleEnd}
-//     >
-//       {/* Draggable Header */}
-//       <div
-//         className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab"
-//         onMouseDown={handleStart}
-//         onTouchStart={handleStart}
-//       >
-//         <div className="z-30 flex flex-row gap-1.5">
-//           {/* Close Button */}
-//           <button
-//             onClick={() => {
-//               console.log("Close button clicked!"); // DEBUG
-//               onClose(); // Close the window
-//             }}
-//             className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"
-//           ></button>
-//           <button className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"></button>
-//         </div>
-//         <div className="absolute z-10 w-full flex justify-center items-center">
-//           <h1 className="text-center">Window</h1>
-//         </div>
-//       </div>
-
-//       {/* Content Area */}
-//       <div className="p-4">{content}</div>
-//     </div>
-//   );
-// }
-
-// *********
-
-
-// "use client";
-// import { useState, useRef } from "react";
-// import FullscreenToggle from "./utils/FullscreenToggle";
-
-// export default function Window({ content, onClose }) {
-//   const windowRef = useRef(null);
-//   const [position, setPosition] = useState({ x: 100, y: 100 });
-//   const [dragging, setDragging] = useState(false);
-//   const [offset, setOffset] = useState({ x: 0, y: 0 });
-
-//   const getClientPos = (e) => {
-//     if (e.touches) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-//     return { x: e.clientX, y: e.clientY };
-//   };
-
-//   const handleStart = (e) => {
-//     const { x, y } = getClientPos(e);
-//     setDragging(true);
-//     setOffset({ x: x - position.x, y: y - position.y });
-//   };
-
-//   const handleMove = (e) => {
-//     if (!dragging) return;
-//     const { x, y } = getClientPos(e);
-//     setPosition({ x: x - offset.x, y: y - offset.y });
-//   };
-
-//   const handleEnd = () => {
-//     setDragging(false);
-//   };
-
-//   return (
-//     <div
-//       ref={windowRef}
-//       className="fixed w-[60vw] h-[60vh] bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20"
-//       style={{ left: `${position.x}px`, top: `${position.y}px` }}
-//       onMouseMove={handleMove}
-//       onMouseUp={handleEnd}
-//       onTouchMove={handleMove}
-//       onTouchEnd={handleEnd}
-//     >
-//       {/* Draggable Header */}
-//       <div
-//         className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab"
-//         onMouseDown={handleStart}
-//         onTouchStart={handleStart}
-//       >
-//         <div className="z-30 flex flex-row gap-1.5">
-//           {/* Close Button */}
-//           <button
-//             onClick={onClose}
-//             className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"
-//           ></button>
-//           <button className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"></button>
-//         </div>
-//         <div className="absolute z-10 w-full flex justify-center items-center">
-//           <h1 className="text-center">Window</h1>
-//         </div>
-//       </div>
-
-//       {/* Content Area */}
-//       <div className="p-4">{content}</div>
-//     </div>
-//   );
-// }
 
 // *********
 
@@ -251,52 +164,52 @@
 
 // *********
 
-"use client";
-import { useState } from "react";
-import { Rnd } from "react-rnd";
+// "use client";
+// import { useState } from "react";
+// import { Rnd } from "react-rnd";
 
-export default function Window({ content, onClose }) {
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [size, setSize] = useState({ width: "60vw", height: "60vh" });
-  const [position, setPosition] = useState({ x: 100, y: 100 });
+// export default function Window({ content, onClose }) {
+//   const [isFullscreen, setIsFullscreen] = useState(false);
+//   const [size, setSize] = useState({ width: "60vw", height: "60vh" });
+//   const [position, setPosition] = useState({ x: 100, y: 100 });
 
-  const toggleFullscreen = () => {
-    setIsFullscreen((prev) => !prev);
-  };
+//   const toggleFullscreen = () => {
+//     setIsFullscreen((prev) => !prev);
+//   };
 
-  return (
-    <Rnd
-      className="fixed bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20 transition-all duration-300"
-      size={isFullscreen ? { width: "100vw", height: "100vh" } : size}
-      position={isFullscreen ? { x: 0, y: 0 } : position}
-      onDragStop={(e, d) => !isFullscreen && setPosition({ x: d.x, y: d.y })}
-      onResizeStop={(e, direction, ref, delta, pos) =>
-        !isFullscreen && setSize({ width: ref.style.width, height: ref.style.height })
-      }
-      disableDragging={isFullscreen}
-    >
-      {/* Draggable Header */}
-      <div
-        className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab"
-      >
-        <div className="z-30 flex flex-row gap-1.5">
-          {/* Close Button */}
-          <button
-            onClick={onClose}
-            className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"
-          ></button>
-          {/* Fullscreen Toggle Button */}
-          <button
-            onClick={toggleFullscreen}
-            className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"
-          ></button>
-        </div>
-        <div className="absolute z-10 w-full flex justify-center items-center">
-          <h1 className="text-center">{isFullscreen ? "Fullscreen Window" : "Window"}</h1>
-        </div>
-      </div>
-      {/* Content Area */}
-      <div className="p-4">{content}</div>
-    </Rnd>
-  );
-}
+//   return (
+//     <Rnd
+//       className="fixed bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20 transition-all duration-300"
+//       size={isFullscreen ? { width: "100vw", height: "100vh" } : size}
+//       position={isFullscreen ? { x: 0, y: 0 } : position}
+//       onDragStop={(e, d) => !isFullscreen && setPosition({ x: d.x, y: d.y })}
+//       onResizeStop={(e, direction, ref, delta, pos) =>
+//         !isFullscreen && setSize({ width: ref.style.width, height: ref.style.height })
+//       }
+//       disableDragging={isFullscreen}
+//     >
+//       {/* Draggable Header */}
+//       <div
+//         className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab"
+//       >
+//         <div className="z-30 flex flex-row gap-1.5">
+//           {/* Close Button */}
+//           <button
+//             onClick={onClose}
+//             className="size-5 rounded-full bg-[#ff4570] border-[.2px] border-gray-700"
+//           ></button>
+//           {/* Fullscreen Toggle Button */}
+//           <button
+//             onClick={toggleFullscreen}
+//             className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"
+//           ></button>
+//         </div>
+//         <div className="absolute z-10 w-full flex justify-center items-center">
+//           <h1 className="text-center">{isFullscreen ? "Fullscreen Window" : "Window"}</h1>
+//         </div>
+//       </div>
+//       {/* Content Area */}
+//       <div className="p-4">{content}</div>
+//     </Rnd>
+//   );
+// }
