@@ -35,7 +35,7 @@ export default function Window({ contentType, onClose }) {
 
   return (
     <Rnd
-      className="fixed bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20 transition-all duration-300"
+      className="fixed bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20 transition-all duration-300 overflow-hidden"
       size={isFullscreen ? { width: "100vw", height: "100vh" } : size}
       position={isFullscreen ? { x: 0, y: 0 } : position}
       onDragStop={(e, d) => isDraggable && !isFullscreen && setPosition({ x: d.x, y: d.y })}
