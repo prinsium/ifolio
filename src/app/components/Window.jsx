@@ -11,35 +11,25 @@ const About = dynamic(() => import("./windowRender/About"), { ssr: false });
 
 export default function Window({ contentType, onClose }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isDraggable, setIsDraggable] = useState(false);
   const [size, setSize] = useState({ width: "60vw", height: "60vh" });
   const [position, setPosition] = useState({ x: 100, y: 100 });
   const [ready, setReady] = useState(false); // Prevents hydration mismatch
-  
+
   useEffect(() => {
     setReady(true);
   }, []);
 
   const toggleFullscreen = () => {
-    setIsFullscreen((prev) => !prev);
+    setIsFullscreen((prev) => {
+      if (!prev) setIsDraggable(false); // Disable dragging when fullscreen
+      return !prev;
+    });
   };
 
-  const renderContent = () => {
-    if (!ready) return <div>Loading...</div>; // Prevents mismatch
-
-    console.log("Rendering content for:", contentType); // Debugging log
-
-    switch (contentType) {
-      case "services":
-        return <Services />;
-      case "work":
-        return <Work />;
-      case "contact":
-        return <Contact />;
-      case "about":
-        return <About />;
-      default:
-        console.error("Unknown contentType received:", contentType);
-        return <div style={{ color: "red" }}>No content available (invalid type: {contentType})</div>;
+  const toggleDraggable = () => {
+    if (!isFullscreen) {
+      setIsDraggable((prev) => !prev);
     }
   };
 
@@ -48,16 +38,16 @@ export default function Window({ contentType, onClose }) {
       className="fixed bg-gray-200 rounded-md shadow-lg bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-20 transition-all duration-300 overflow-hidden"
       size={isFullscreen ? { width: "100vw", height: "100vh" } : size}
       position={isFullscreen ? { x: 0, y: 0 } : position}
-      onDragStop={(e, d) => !isFullscreen && setPosition({ x: d.x, y: d.y })}
+      onDragStop={(e, d) => isDraggable && !isFullscreen && setPosition({ x: d.x, y: d.y })}
       onResizeStop={(e, direction, ref, delta, pos) =>
         !isFullscreen && setSize({ width: ref.style.width, height: ref.style.height })
       }
-      disableDragging={isFullscreen}
-      dragHandleClassName="drag-handle" // Ensures only header is draggable
-      enableUserSelectHack={false} // Prevents text selection during drag
+      disableDragging={!isDraggable}
     >
       {/* Draggable Header */}
-      <div className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab drag-handle">
+      <div 
+        className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300"
+      >
         <div className="z-30 flex flex-row gap-1.5">
           {/* Close Button */}
           <button
@@ -69,16 +59,33 @@ export default function Window({ contentType, onClose }) {
             onClick={toggleFullscreen}
             className="size-5 rounded-full bg-[#ffe345] border-[.2px] border-gray-700"
           ></button>
+          {/* Draggable Toggle Button */}
+          <button
+            onClick={toggleDraggable}
+            className={`size-5 rounded-full border-[.2px] border-gray-700 ${isDraggable ? 'bg-purple-700' : 'bg-purple-500'}`}
+          ></button>
         </div>
         <div className="absolute z-10 w-full flex justify-center items-center">
           <h1 className="text-center capitalize">{contentType}</h1>
         </div>
       </div>
       {/* Content Area */}
-      <div className="p-4 overflow-auto h-full">{renderContent()}</div>
+      <div className="p-4 overflow-auto h-full">
+        {ready ? (
+          contentType === "services" ? <Services /> :
+          contentType === "work" ? <Work /> :
+          contentType === "contact" ? <Contact /> :
+          contentType === "about" ? <About /> :
+          <div style={{ color: "red" }}>No content available (invalid type: {contentType})</div>
+        ) : (
+          <div>Loading...</div>
+        )}
+      </div>
     </Rnd>
   );
 }
+
+
 
 
 
