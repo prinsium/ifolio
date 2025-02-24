@@ -9,6 +9,7 @@ import BottomNav from "./components/BottomNav";
 import Work from "./components/windowRender/Work";
 import About from "./components/windowRender/About";
 import Contact from "./components/windowRender/Contact";
+import Services from "./components/windowRender/Services";
 
 
 export default function App() {
@@ -29,7 +30,7 @@ export default function App() {
       <Topbar />
       {/* <Taskbar onSelect={handleSelect} />
       {isWindowOpen && <Window content={selectedContent} onClose={handleClose} />} */}
-      <Contact />
+      <Services />
     </div>
   );
 }
