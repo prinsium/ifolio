@@ -1,6 +1,6 @@
 
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Taskbar from "./components/Taskbar";
 import Window from "./components/Window";
 import data from "./data/data";
@@ -13,6 +13,22 @@ import Services from "./components/windowRender/Services";
 
 
 export default function App() {
+
+  useEffect(() => {
+    const preventReload = (e) => {
+      if (e.touches.length > 1 || window.scrollY === 0) {
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener("touchmove", preventReload, { passive: false });
+
+    return () => {
+      document.removeEventListener("touchmove", preventReload);
+    };
+  }, []);
+
+
   const [selectedContent, setSelectedContent] = useState(null);
   const [isWindowOpen, setIsWindowOpen] = useState(false);
 
