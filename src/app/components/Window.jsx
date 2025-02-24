@@ -13,16 +13,19 @@ export default function Window({ contentType, onClose }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [size, setSize] = useState({ width: "60vw", height: "60vh" });
   const [position, setPosition] = useState({ x: 100, y: 100 });
-
+  const [ready, setReady] = useState(false); // Prevents hydration mismatch
+  
   useEffect(() => {
-    console.log("Window received contentType:", contentType);
-  }, [contentType]);
+    setReady(true);
+  }, []);
 
   const toggleFullscreen = () => {
     setIsFullscreen((prev) => !prev);
   };
 
   const renderContent = () => {
+    if (!ready) return <div>Loading...</div>; // Prevents mismatch
+
     console.log("Rendering content for:", contentType); // Debugging log
 
     switch (contentType) {
@@ -50,9 +53,11 @@ export default function Window({ contentType, onClose }) {
         !isFullscreen && setSize({ width: ref.style.width, height: ref.style.height })
       }
       disableDragging={isFullscreen}
+      dragHandleClassName="drag-handle" // Ensures only header is draggable
+      enableUserSelectHack={false} // Prevents text selection during drag
     >
       {/* Draggable Header */}
-      <div className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab">
+      <div className="p-2 rounded-t-md shadow-md flex flex-row justify-between items-center bg-slate-300 cursor-grab drag-handle">
         <div className="z-30 flex flex-row gap-1.5">
           {/* Close Button */}
           <button
@@ -66,7 +71,7 @@ export default function Window({ contentType, onClose }) {
           ></button>
         </div>
         <div className="absolute z-10 w-full flex justify-center items-center">
-          <h1 className="text-center capitalize">{contentType || "Unknown"}</h1>
+          <h1 className="text-center capitalize">{contentType}</h1>
         </div>
       </div>
       {/* Content Area */}
@@ -74,6 +79,7 @@ export default function Window({ contentType, onClose }) {
     </Rnd>
   );
 }
+
 
 
 // *********
